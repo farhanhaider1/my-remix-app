@@ -1,8 +1,22 @@
-import { Link, useLoaderData } from "remix";
+import {
+  Link,
+  redirect,
+  useLoaderData,
+  useMatches,
+  useTransition,
+} from "remix";
 
 import { getPosts } from "~/post";
+import { usrId } from "~/utils/session.server";
 
-export let loader = ({ request }) => {
+export let loader = async ({ request }) => {
+  const cookieSession = await usrId.getSession(request.headers.get("Cookie"));
+  const id = cookieSession.get("userId");
+  // if (!id) {
+  //   console.log("no id");
+  //   return redirect("/login");
+  // }
+  console.log(id);
   return getPosts(request);
 };
 
@@ -11,7 +25,7 @@ export default function Posts() {
 
   return (
     <div>
-      <h1>Posts</h1>
+      <h1>Posts!</h1>
 
       <ul>
         {posts.map((post) => (

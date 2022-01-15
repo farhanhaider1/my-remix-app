@@ -1,6 +1,6 @@
 import { redirect } from "remix";
 
-import { db } from "~/utils/db.server";
+import { db } from "~/utils/db/db.server";
 import { getUserSession } from "./utils/session.server";
 
 export async function getPosts(request) {

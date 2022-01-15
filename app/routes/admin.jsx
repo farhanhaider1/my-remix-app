@@ -1,7 +1,7 @@
 import { Outlet, Link, useLoaderData, redirect } from "remix";
 import { getPosts } from "~/post";
 import adminStyles from "~/styles/admin.css";
-import { auth } from "~/utils/db.server";
+// import { auth } from "~/utils/db.server";
 
 export let links = () => {
   return [{ rel: "stylesheet", href: adminStyles }];

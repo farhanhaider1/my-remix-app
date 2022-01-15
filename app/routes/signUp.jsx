@@ -1,6 +1,6 @@
 import { Form, Link } from "remix";
 
-import { signUp } from "~/utils/db.server";
+import { signUp } from "~/utils/db/db.server";
 import { createUserSession } from "~/utils/session.server";
 
 export let action = async ({ request }) => {

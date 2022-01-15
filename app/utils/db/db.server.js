@@ -3,45 +3,57 @@ import {
   applicationDefault,
   initializeApp as initializeAdminApp,
 } from "firebase-admin/app";
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApp, getApps } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   getAuth,
   signOut,
 } from "firebase/auth";
-
 require("dotenv").config();
+require("firebase/auth");
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  // config goes here
+  apiKey: "AIzaSyDaxy8idrHkUKDfwdD0eVOOm-vce3o9sSI",
+  authDomain: "auth-dev-360bf.firebaseapp.com",
+  projectId: "auth-dev-360bf",
+  storageBucket: "auth-dev-360bf.appspot.com",
+  messagingSenderId: "1046160653650",
+  appId: "1:1046160653650:web:315ac4162180efce87ce8b",
+  measurementId: "G-WK3TD49L5E",
 };
 
 if (!admin.apps.length) {
   initializeAdminApp({
     credential: applicationDefault(),
-    databaseURL: "https://remix-firebase-3622f.firebaseio.com",
   });
 }
-
 const db = admin.firestore();
 const adminAuth = admin.auth();
 
-let Firebase;
-
-if (!Firebase?.apps?.length) {
-  Firebase = initializeApp(firebaseConfig);
+let app;
+if (getApps().length === 0) {
+  // Initialize Firebase app
+  app = initializeApp(firebaseConfig);
+} else {
+  // Use existing app if already initialized
+  app = getApp();
 }
 
-async function signIn(email, password) {
-  const auth = getAuth();
+const auth = getAuth();
+
+export async function signIn(email, password) {
+  // const auth = getAuth();
   return signInWithEmailAndPassword(auth, email, password);
 }
 
-async function signUp(email, password) {
-  const auth = getAuth();
+export async function signUp(email, password) {
+  // const auth = getAuth();
   return createUserWithEmailAndPassword(auth, email, password);
+}
+export async function signOutFirebase() {
+  await signOut(getAuth());
 }
 
 async function getSessionToken(idToken) {
@@ -53,8 +65,4 @@ async function getSessionToken(idToken) {
   return adminAuth.createSessionCookie(idToken, { expiresIn: twoWeeks });
 }
 
-async function signOutFirebase() {
-  await signOut(getAuth());
-}
-
-export { db, signUp, getSessionToken, signOutFirebase, signIn, adminAuth };
+export { db, getSessionToken, adminAuth };

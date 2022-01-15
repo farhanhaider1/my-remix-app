@@ -1,6 +1,7 @@
-import { createCookieSessionStorage, redirect } from "remix";
+import { createCookie, createCookieSessionStorage, redirect } from "remix";
 
-import { getSessionToken, signOutFirebase, adminAuth } from "~/utils/db.server";
+import { getSessionToken, adminAuth } from "~/utils/db/db.server";
+import { signOutFirebase } from "./db/db.server";
 
 require("dotenv").config();
 
@@ -24,16 +25,38 @@ const storage = createCookieSessionStorage({
   },
 });
 
+export const usrId = createCookieSessionStorage({
+  cookie: {
+    name: "id",
+    // normally you want this to be `secure: true`
+    // but that doesn't work on localhost for Safari
+    // https://web.dev/when-to-use-local-https/
+    secure: process.env.NODE_ENV === "production",
+    secrets: [sessionSecret],
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+    httpOnly: true,
+  },
+});
+
 async function createUserSession(idToken, redirectTo) {
   const token = await getSessionToken(idToken);
   const session = await storage.getSession();
+  const usrSession = await usrId.getSession();
+  usrSession.set("userId", "1234");
   session.set("token", token);
+  let headers = new Headers();
+  headers.append("Set-Cookie", await storage.commitSession(session));
+  headers.append("Set-Cookie", await usrId.commitSession(usrSession));
 
-  return redirect(redirectTo, {
-    headers: {
-      "Set-Cookie": await storage.commitSession(session),
-    },
-  });
+  // headers.append("Set-Cookie", cookie);
+  return redirect(redirectTo, { headers });
+  // return redirect(redirectTo, {
+  //   headers: {
+  //     "Set-Cookie": await storage.commitSession(session),
+  //   },
+  // });
 }
 
 async function getUserSession(request) {
