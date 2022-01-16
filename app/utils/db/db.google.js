@@ -1,9 +1,12 @@
+import { async } from "@firebase/util";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithRedirect,
   signInWithPopup,
+  FacebookAuthProvider,
+  getRedirectResult,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -27,6 +30,18 @@ export async function signInWithGoogle() {
 export async function signInWithGoogleRedirect() {
   const provider = new GoogleAuthProvider();
   return signInWithRedirect(auth, provider);
+}
+
+export async function signInWithFb() {
+  const provider = new FacebookAuthProvider();
+  return signInWithPopup(auth, provider);
+}
+export async function signInWithFbRed() {
+  const provider = new FacebookAuthProvider();
+  return signInWithRedirect(auth, provider);
+}
+export async function getRedRes() {
+  return getRedirectResult(auth);
 }
 
 export async function getUser(result) {
